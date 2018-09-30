@@ -15,6 +15,7 @@
  */
 package com.cindy.library
 
+import android.support.annotation.CheckResult
 import android.support.v7.widget.RecyclerView
 
 /**
@@ -26,14 +27,12 @@ import android.support.v7.widget.RecyclerView
 interface TypePool {
 
     /**
-     * Registers a type class and its item view binder.
+     * Register a type class
      *
      * @param clazz  the class of a item
-     * @param binder the item view binder
-     * @param <T>    the item data type
-    </T> */
-    fun <T> register(clazz: Class<out T>,
-                     binder: BaseCellAdapter<T, out RecyclerView.ViewHolder>)
+     */
+    @CheckResult
+    fun <T> register(clazz: Class<out T>, multiTypeAdapter: MultiTypeAdapter): LinkerDataBinder<T>
 
     /**
      * Unregister all items with the specified class.

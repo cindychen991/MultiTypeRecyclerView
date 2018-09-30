@@ -27,9 +27,9 @@ class SampleActivity : Activity() {
         Toast.makeText(this, "loading", Toast.LENGTH_SHORT).show()
         recyclerView.layoutManager = LinearLayoutManager(this)
         multiTypeAdapter = MultiTypeAdapter(this).apply {
-            register(ItemOne::class.java, ItemOneAdapter())
-            register(ItemTwo::class.java, binders = *arrayOf(ItemTwoAdapter(), ItemThreeAdapter()),
-                    filterCellListener = onAdapterFilter)
+            register(ItemOne::class.java).to(ItemOneAdapter())
+            register(ItemTwo::class.java).to(filter = onAdapterFilter, binders =
+            *arrayOf(ItemTwoAdapter(), ItemThreeAdapter()))
         }
         recyclerView.adapter = multiTypeAdapter
     }

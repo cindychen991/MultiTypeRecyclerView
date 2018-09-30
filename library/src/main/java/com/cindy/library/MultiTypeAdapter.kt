@@ -16,8 +16,8 @@
 package com.cindy.library
 
 import android.content.Context
+import android.support.annotation.CheckResult
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.ViewGroup
 import java.util.Collections.emptyList
 
@@ -31,45 +31,14 @@ import java.util.Collections.emptyList
 open class MultiTypeAdapter @JvmOverloads constructor(context: Context, list: MutableList<Any>? = null)
     : BaseRecyclerViewAdapter<Any, RecyclerView.ViewHolder>(context, list) {
 
-    companion object {
-        private const val TAG = "MultiTypeAdapter"
-    }
-
     private val multiTypePool: MultiTypePool = MultiTypePool()
 
-
     /**
-     * one 2 one : 注册 CellAdapter
-     *
-     * @param clazz  data 的类型
-     * @param binder which extends BaseCellAdapter
+     * 注册 CellAdapter
      */
-    fun <T> register(clazz: Class<out T>, binder: BaseCellAdapter<T, out RecyclerView.ViewHolder>)
-            : MultiTypeAdapter {
-        return register(clazz, binders = *arrayOf(binder), filterCellListener = null)
-    }
-
-    /**
-     * one 2 more : 注册 CellAdapter
-     *
-     * @param clazz  data 的类型
-     * @param binders BaseCellAdapters
-     * @param filterCellListener 自定义返回该 item 需要处理的 binder class, 默认返回数据绑定的第一个
-     */
-    fun <T> register(clazz: Class<out T>,
-                     vararg binders: BaseCellAdapter<T, out RecyclerView.ViewHolder>,
-                     filterCellListener: OnFilterCellListener?)
-            : MultiTypeAdapter {
-        //不能重复注册
-        if (multiTypePool.unregister(clazz)) {
-            // todo
-            Log.e(TAG, "you have registered ${clazz::javaClass} this binder")
-        }
-        for (binder in binders) {
-            binder.adapter = this
-        }
-        multiTypePool.register(clazz, binders = *binders, filterCellListener = filterCellListener)
-        return this
+    @CheckResult
+    fun <T> register(clazz: Class<out T>): LinkerDataBinder<T> {
+        return multiTypePool.register(clazz = clazz, multiTypeAdapter = this)
     }
 
     fun getViewTypes(): Int {

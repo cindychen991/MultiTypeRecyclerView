@@ -1,6 +1,8 @@
 package com.cindy.library
 
+import android.support.annotation.CheckResult
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import java.util.*
 
 
@@ -13,6 +15,10 @@ import java.util.*
  */
 open class MultiTypePool : TypePool {
 
+    companion object {
+        private const val TAG = "MultiTypePool"
+    }
+
     private val linkers: MutableList<DefaultDataLinkBinder>
     /**
      * 当前最后一个 binder viewType 索引
@@ -23,15 +29,29 @@ open class MultiTypePool : TypePool {
         linkers = ArrayList()
     }
 
-    override fun <T> register(clazz: Class<out T>,  binder: BaseCellAdapter<T, out RecyclerView.ViewHolder>) {
-        this.register(clazz, binders = *arrayOf(binder), filterCellListener = null)
+    /**
+     * Registers a type class and its item view binder.
+     *
+     * @param clazz  the class of a item
+     * @param multiTypeAdapter current adapter
+     * @return LinkerDataBinder   a temp data
+     */
+    @CheckResult
+    override fun <T> register(clazz: Class<out T>, multiTypeAdapter: MultiTypeAdapter): LinkerDataBinder<T> {
+        return LinkerDataBinder(multiTypeAdapter = multiTypeAdapter,
+                multiTypePool = this,
+                clazz = clazz)
     }
 
-    fun <T> register(clazz: Class<out T>,
-                     vararg binders: BaseCellAdapter<T, out RecyclerView.ViewHolder>,
-                     filterCellListener: OnFilterCellListener?) {
+    fun to(clazz: Class<*>,
+           filter: OnFilterCellListener?,
+           vararg binders: BaseCellAdapter<*, out RecyclerView.ViewHolder>) {
+        //不能重复注册
+        if (this.unregister(clazz)) {
+            Log.e(MultiTypePool.TAG, "you have registered ${clazz::javaClass} this binder")
+        }
         linkers.add(DefaultDataLinkBinder(clazz, binders = *binders, viewTypeIndex = this.preViewTypeIndex).apply {
-            onFilter(filterCellListener)
+            onFilter(filter)
         })
         // make sure binder's viewType is different
         preViewTypeIndex += binders.size

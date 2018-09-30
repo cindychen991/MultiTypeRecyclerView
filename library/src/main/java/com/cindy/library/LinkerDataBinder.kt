@@ -8,17 +8,9 @@ import android.support.v7.widget.RecyclerView
  * @author ChenDanDan
  * @date 2018/9/30
  */
-class LinkerDataBinder<T> {
-
-    private var multiTypePool: MultiTypePool
-    private var clazz: Class<out T>
-    private var multiTypeAdapter: MultiTypeAdapter
-
-    constructor(multiTypeAdapter: MultiTypeAdapter, multiTypePool: MultiTypePool, clazz: Class<out T>) {
-        this.multiTypeAdapter = multiTypeAdapter
-        this.multiTypePool = multiTypePool
-        this.clazz = clazz
-    }
+class LinkerDataBinder<T>(private var multiTypeAdapter: MultiTypeAdapter,
+                          private var multiTypePool: MultiTypePool,
+                          private var clazz: Class<out T>) {
 
     /**
      * register data to binder
